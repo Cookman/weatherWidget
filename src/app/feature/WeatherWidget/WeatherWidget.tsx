@@ -1,22 +1,22 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {useAppDispatch} from '../../../state/hooks';
+import {useAppDispatch, useAppSelector} from '../../../state/hooks';
 import {
     fetchCurrentWeatherAsync,
     isLoadingSelector,
     weatherDataSelector,
     weatherErrorSelector
 } from '../../../state/weather/weather.slice';
-import {shallowEqual, useSelector} from "react-redux";
+import {shallowEqual} from "react-redux";
 import styled from "styled-components";
 // @ts-ignore
 import {ReactComponent as MapIcon} from '../../../icons/map.svg';
 import MapModal from "../Map/MapModal";
 import ReactDOM from 'react-dom';
 
-import {getLocationQuery} from "./weatherWidget.helpers";
+import {getDataKey, getLocationQuery} from "./weatherWidget.helpers";
 import Button from "../../components/Button";
 import Spinner from "../../components/Spinner";
-
+import {LocationType} from "../../../state/types";
 
 
 const WidgetWrapper = styled.div`
@@ -62,22 +62,27 @@ const InfoWrapper = styled.div`
 const WeatherWidget = () => {
         const dispatch = useAppDispatch();
 
-        const isLoading = useSelector(isLoadingSelector, shallowEqual)
-        const weatherData = useSelector(weatherDataSelector, shallowEqual)
-        const error = useSelector(weatherErrorSelector, shallowEqual)
 
-        const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
+        const [location, setLocation] = useState<LocationType>(null);
+
+        const weatherData = useAppSelector(state => weatherDataSelector(state, getDataKey(location)), shallowEqual)
+        const isLoading = useAppSelector(state => isLoadingSelector(state, getDataKey(location)), shallowEqual)
+        const error = useAppSelector(state => weatherErrorSelector(state, getDataKey(location)), shallowEqual)
+
         const [modalVisible, setModalVisible] = useState(false)
         const [toolsVisible, setToolsVisible] = useState(false
         )
 
         useEffect(() => {
             if (location) {
-                dispatch(fetchCurrentWeatherAsync({q: `${location.lat},${location.lon}`}))
+                dispatch(fetchCurrentWeatherAsync({q: `${location.latitude},${location.longitude}`}))
             } else {
-                getLocationQuery(q => dispatch(fetchCurrentWeatherAsync({q})))
+                getLocationQuery(q => {
+                    setLocation({latitude: q.latitude, longitude: q.longitude})
+                    dispatch(fetchCurrentWeatherAsync({q: `${q.latitude},${q.longitude}`}))
+                })
             }
-        }, [location,dispatch]);
+        }, [location, dispatch]);
 
         const countryInfo = useMemo(() => (
                 <TitleWrapper>

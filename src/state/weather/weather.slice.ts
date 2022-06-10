@@ -6,9 +6,9 @@ import {WeatherResponse, WeatherState} from "./weather.types";
 const SLICE_KEY = 'weather'
 
 const initialState: WeatherState = {
-    value: null,
-    isLoading: false,
-    error: ''
+    value: {},
+    isLoading: {},
+    error: {}
 };
 
 //ACTIONS
@@ -29,26 +29,26 @@ export const weatherSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(fetchCurrentWeatherAsync.pending, (state) => {
-                state.isLoading = true;
+            .addCase(fetchCurrentWeatherAsync.pending, (state,action) => {
+                state.isLoading[action.meta.arg.q] = true;
             })
             .addCase(fetchCurrentWeatherAsync.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.value = action.payload.data
+                state.isLoading[action.meta.arg.q] = false;
+                state.value[action.meta.arg.q] = action.payload.data
             })
             .addCase(fetchCurrentWeatherAsync.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoading[action.meta.arg.q] = true;
 
                 // @ts-ignore
-                state.error=action.error.status
+                state.error = action.error.status
             });
     },
 });
 
 //SELECTORS
-export const isLoadingSelector = (state: RootState) => state.weather.isLoading;
-export const weatherDataSelector = (state: RootState) => state.weather.value
-export const weatherErrorSelector = (state: RootState) => state.weather.error
+export const isLoadingSelector = (state: RootState,q: string) => state.weather.isLoading[q];
+export const weatherDataSelector = (state: RootState, q: string) => state.weather.value[q]
+export const weatherErrorSelector = (state: RootState,q: string) => state.weather.error[q]
 
 
 export default weatherSlice.reducer;

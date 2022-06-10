@@ -2,10 +2,11 @@
 import React, {useEffect, useRef} from "react";
 import styled from "styled-components";
 import {buildMap} from "./map.helpers";
+import {LocationType} from "../../../state/types";
 
 type Props = {
-    defaultLocation?: { lat: number; lon: number } | null;
-    onClick: ({lat, lon}) => void
+    defaultLocation?: LocationType;
+    onClick: (data: LocationType) => void
 }
 
 const MapRow = styled.div`
@@ -23,7 +24,7 @@ const MapViewer: React.FC<Props> = ({onClick, defaultLocation}) => {
         }
 
         if (defaultLocation) {
-            initializeMap([defaultLocation.lon, defaultLocation.lat])
+            initializeMap([defaultLocation.longitude, defaultLocation.latitude])
         } else {
             navigator.geolocation.getCurrentPosition(
                 pos => {
@@ -36,7 +37,7 @@ const MapViewer: React.FC<Props> = ({onClick, defaultLocation}) => {
             );
         }
 
-    }, [mapElement,defaultLocation, onClick]);
+    }, [mapElement, defaultLocation, onClick]);
 
     return (
         <MapRow ref={mapElement} className="map-container"/>

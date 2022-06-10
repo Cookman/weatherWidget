@@ -51,9 +51,9 @@ export const buildMap = (coords, mapElement, onClick) => {
 
     initialMap.on('click', (event) => {
         const lonlat = transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
-        const lon = lonlat[0];
-        const lat = lonlat[1];
-        onClick({lat, lon})
+        const longitude = lonlat[0];
+        const latitude = lonlat[1];
+        onClick({latitude, longitude})
         drawMarker(lonlat)
     })
 

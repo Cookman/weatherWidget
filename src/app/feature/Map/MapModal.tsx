@@ -2,9 +2,10 @@ import React, {useCallback, useState} from 'react';
 import styled from "styled-components";
 import MapViewer from "./MapViewer";
 import Button from "../../components/Button";
+import {LocationType} from "../../../state/types";
 
 type Props = {
-    defaultLocation?: { lat: number; lon: number } | null;
+    defaultLocation?: LocationType;
     onClose: (data: any) => void
 };
 
@@ -25,7 +26,6 @@ const MapWrapper = styled.div`
   background: gray;
   border-radius: 12px;
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.4);
-
 `
 
 const ToolsWrapper = styled.div`
@@ -44,7 +44,7 @@ const ModalBackground = styled.div`
 
 const MapModal: React.FC<Props> = ({onClose, defaultLocation = null}) => {
 
-    const [selectedPoint, setSelectedPoint] = useState<{ lat: number, lon: number } | null>(defaultLocation)
+    const [selectedPoint, setSelectedPoint] = useState<{ latitude: number, longitude: number } | null>(defaultLocation)
 
     const onCloseHandler = useCallback(() => {
         onClose(selectedPoint)

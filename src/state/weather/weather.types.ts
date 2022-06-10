@@ -13,7 +13,7 @@ export type WeatherResponse = {
 }
 
 export interface WeatherState {
-    value: WeatherResponse | null;
-    isLoading: boolean;
-    error: string
+    value: Record<string, WeatherResponse>;
+    isLoading: Record<string, boolean>;
+    error: Record<string, string>
 }
