@@ -14,3 +14,8 @@ root.render(
     </Provider>
 );
 
+// @ts-ignore
+if (module.hot) {
+    // @ts-ignore
+    module.hot.accept()
+}
