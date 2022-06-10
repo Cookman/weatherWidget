@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useAppDispatch, useAppSelector} from '../../../state/hooks';
 import {
     fetchCurrentWeatherAsync,
@@ -12,12 +12,11 @@ import styled from "styled-components";
 import {ReactComponent as MapIcon} from '../../../icons/map.svg';
 import MapModal from "../Map/MapModal";
 import ReactDOM from 'react-dom';
-
 import {getDataKey, getLocationQuery} from "./weatherWidget.helpers";
-import Button from "../../components/Button";
 import Spinner from "../../components/Spinner";
 import {LocationType} from "../../../state/types";
-
+import CountryInfo from "./CountryInfo";
+import WeatherInfo from "./WeatherInfo";
 
 const WidgetWrapper = styled.div`
   background: #8C8E93;
@@ -30,14 +29,12 @@ const WidgetWrapper = styled.div`
   height: 150px;
   width: 200px;
   position: relative;
-`
+  cursor: pointer;
 
-const ToolsWrapper = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 5px;
+  &:hover {
+    box-shadow: 0 3px 8px 0 rgba(170, 170, 170, 1);
+  }
 `
-
 
 const ErrorWrapper = styled.div`
   color: red;
@@ -47,21 +44,8 @@ const ErrorWrapper = styled.div`
   justify-content: center;
 `
 
-const TitleWrapper = styled.div`
-  width: 100%`
-
-const CountryWrapper = styled.div`
-  font-size: 8px`
-
-const InfoWrapper = styled.div`
-  margin-top: 10px;
-  border-top: 1px solid darkgray;
-  padding-top: 10px;
-`
-
 const WeatherWidget = () => {
         const dispatch = useAppDispatch();
-
 
         const [location, setLocation] = useState<LocationType>(null);
 
@@ -70,63 +54,47 @@ const WeatherWidget = () => {
         const error = useAppSelector(state => weatherErrorSelector(state, getDataKey(location)), shallowEqual)
 
         const [modalVisible, setModalVisible] = useState(false)
-        const [toolsVisible, setToolsVisible] = useState(false
-        )
+        const [toolsVisible, setToolsVisible] = useState(false)
 
         useEffect(() => {
-            if (location) {
-                dispatch(fetchCurrentWeatherAsync({q: `${location.latitude},${location.longitude}`}))
-            } else {
-                getLocationQuery(q => {
-                    setLocation({latitude: q.latitude, longitude: q.longitude})
-                    dispatch(fetchCurrentWeatherAsync({q: `${q.latitude},${q.longitude}`}))
-                })
+            const fetchLocation = () => {
+                if (location) {
+                    dispatch(fetchCurrentWeatherAsync({q: `${location.latitude},${location.longitude}`}))
+                } else {
+                    getLocationQuery(q => {
+                        setLocation({latitude: q.latitude, longitude: q.longitude})
+                        dispatch(fetchCurrentWeatherAsync({q: `${q.latitude},${q.longitude}`}))
+                    })
+                }
+            }
+            fetchLocation()
+            const id = setInterval(fetchLocation, 30000)
+
+            return () => {
+                clearInterval(id)
             }
         }, [location, dispatch]);
 
-        const countryInfo = useMemo(() => (
-                <TitleWrapper>
-                    <div>{weatherData?.location?.name}</div>
-                    <CountryWrapper>({weatherData?.location?.country})</CountryWrapper>
-                </TitleWrapper>),
-            [weatherData]
-        )
-
-        const weatherInfo = useMemo(() => (
-                <InfoWrapper>
-                    <div>{weatherData?.current?.temp_c}℃</div>
-                    <div>{weatherData?.current?.condition?.text}</div>
-                    <img src={weatherData?.current?.condition?.icon} alt=''/>
-                </InfoWrapper>
-            ),
-            [weatherData]
-        )
-
         return (<>
                 <WidgetWrapper onMouseEnter={() => setToolsVisible(true)}
-                               onMouseLeave={() => setToolsVisible(false)}>
+                               onMouseLeave={() => setToolsVisible(false)}
+                               onClick={() => {
+                                   setModalVisible(true)
+                               }}>
                     {!isLoading && !error &&
                         <>
-                            {countryInfo}
-                            {toolsVisible && <ToolsWrapper>
-                                <Button onClick={() => {
-                                    setToolsVisible(false)
-                                    setModalVisible(true)
-                                }}
-                                        Icon={() => <MapIcon width={20}/>}/>
-                            </ToolsWrapper>}
-                            {weatherInfo}
+                            <CountryInfo weatherData={weatherData}/>
+                            <WeatherInfo weatherData={weatherData}/>
                         </>
                     }
                     {isLoading && <Spinner/>}
                     {error && <ErrorWrapper>Error: {error}</ErrorWrapper>}
                 </WidgetWrapper>
-                {modalVisible && ReactDOM.createPortal(<MapModal defaultLocation={location} onClose={(data) => {
-                    setLocation(data)
-
-                    setModalVisible(false)
-                }}/>, document.body)}
-
+                {modalVisible &&
+                    ReactDOM.createPortal(<MapModal defaultLocation={location} onClose={(data) => {
+                        setLocation(data)
+                        setModalVisible(false)
+                    }}/>, document.body)}
             </>
         );
     }

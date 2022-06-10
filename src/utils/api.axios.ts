@@ -12,7 +12,6 @@ const stringifyParams = (params:Record<string,string>)=>Object.keys(params).redu
 
 export const createGETRequest = <T>(config?: AxiosRequestConfig) => {
     const preparedUrl = `?${stringifyParams(config?.params)}&key=${KEY}`
-    console.log(preparedUrl)
 
     return axiosInstance.get<T>(preparedUrl, {...config});
 };
