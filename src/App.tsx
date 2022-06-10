@@ -6,7 +6,6 @@ import styled from "styled-components";
 import {ReactComponent as PlusIcon} from './icons/plus.svg';
 
 const AppWrapper = styled.div`
-
   text-align: center;
   margin-top: 10px;`
 
@@ -35,7 +34,6 @@ function App() {
                 {widgets.map(({id}) => {
                     return <WeatherWidget key={id}/>
                 })}
-
             </ContentWrapper>
         </AppWrapper>
     );
