@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, {useEffect, useRef} from "react";
 import styled from "styled-components";
 import {buildMap} from "./map.helpers";
@@ -19,7 +18,7 @@ const MapViewer: React.FC<Props> = ({onClick, defaultLocation}) => {
     const mapElement = useRef(null);
 
     useEffect(() => {
-        const initializeMap = (coords) => {
+        const initializeMap = (coords:[number,number]) => {
             buildMap(coords, mapElement, onClick)
         }
 

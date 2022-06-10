@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import './App.css';
 import WeatherWidget from "./app/feature/WeatherWidget/WeatherWidget";
 import Button from "./app/components/Button";
 import styled from "styled-components";
@@ -7,10 +6,17 @@ import styled from "styled-components";
 import {ReactComponent as PlusIcon} from './icons/plus.svg';
 
 const AppWrapper = styled.div`
+
+  text-align: center;
+  margin-top: 10px;`
+
+const ContentWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap`
+  flex-wrap: wrap;
+  text-align: center;
+  margin-top: 10px;`
 
 function App() {
 
@@ -18,24 +24,21 @@ function App() {
     const [widgets, setWidgets] = useState([{id: nextId}])
 
     return (
-        <div className="App">
-
+        <AppWrapper>
             <Button onClick={() => {
                 setNextId(nextId + 1)
                 setWidgets([...widgets, {id: nextId + 1}])
-
             }}
                     Icon={() => <PlusIcon width={20}/>}
                     title='Add widget'/>
-            <AppWrapper>
+            <ContentWrapper>
                 {widgets.map(({id}) => {
                     return <WeatherWidget key={id}/>
                 })}
 
-            </AppWrapper>
-        </div>
+            </ContentWrapper>
+        </AppWrapper>
     );
 }
-
 
 export default App;

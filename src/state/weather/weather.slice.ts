@@ -40,9 +40,8 @@ export const weatherSlice = createSlice({
             })
             .addCase(fetchCurrentWeatherAsync.rejected, (state, action) => {
                 state.isLoading[action.meta.arg.q] = true;
-
                 // @ts-ignore
-                state.error = action.error.status
+                state.error[action.meta.arg.q] = action.error.status
             });
     },
 });
@@ -51,6 +50,5 @@ export const weatherSlice = createSlice({
 export const isLoadingSelector = (state: RootState,q: string) => state.weather.isLoading[q];
 export const weatherDataSelector = (state: RootState, q: string) => state.weather.value[q]
 export const weatherErrorSelector = (state: RootState,q: string) => state.weather.error[q]
-
 
 export default weatherSlice.reducer;

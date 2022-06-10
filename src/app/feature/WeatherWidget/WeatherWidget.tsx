@@ -29,7 +29,6 @@ const WidgetWrapper = styled.div`
   width: 200px;
   position: relative;
   cursor: pointer;
-
   &:hover {
     box-shadow: 0 3px 8px 0 rgba(170, 170, 170, 1);
   }
@@ -44,58 +43,56 @@ const ErrorWrapper = styled.div`
 `
 
 const WeatherWidget = () => {
-        const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
-        const [location, setLocation] = useState<LocationType>(null);
+    const [location, setLocation] = useState<LocationType>(null);
+    const [modalVisible, setModalVisible] = useState(false)
 
-        const weatherData = useAppSelector(state => weatherDataSelector(state, getDataKey(location)), shallowEqual)
-        const isLoading = useAppSelector(state => isLoadingSelector(state, getDataKey(location)), shallowEqual)
-        const error = useAppSelector(state => weatherErrorSelector(state, getDataKey(location)), shallowEqual)
+    const weatherData = useAppSelector(state => weatherDataSelector(state, getDataKey(location)), shallowEqual)
+    const isLoading = useAppSelector(state => isLoadingSelector(state, getDataKey(location)), shallowEqual)
+    const error = useAppSelector(state => weatherErrorSelector(state, getDataKey(location)), shallowEqual)
 
-        const [modalVisible, setModalVisible] = useState(false)
-    
-        useEffect(() => {
-            const fetchLocation = () => {
-                if (location) {
-                    dispatch(fetchCurrentWeatherAsync({q: `${location.latitude},${location.longitude}`}))
-                } else {
-                    getLocationQuery(q => {
-                        setLocation({latitude: q.latitude, longitude: q.longitude})
 
-                    })
+    useEffect(() => {
+        const fetchLocation = () => {
+            if (location) {
+                dispatch(fetchCurrentWeatherAsync({q: `${location.latitude},${location.longitude}`}))
+            } else {
+                getLocationQuery(q => {
+                    setLocation({latitude: q.latitude, longitude: q.longitude})
+
+                })
+            }
+        }
+        fetchLocation()
+        const id = setInterval(fetchLocation, 30000)
+
+        return () => {
+            clearInterval(id)
+        }
+    }, [location, dispatch]);
+
+    return (<>
+            <WidgetWrapper
+                onClick={() => {
+                    setModalVisible(true)
+                }}>
+                {!isLoading && !error &&
+                    <>
+                        <CountryInfo weatherData={weatherData}/>
+                        <WeatherInfo weatherData={weatherData}/>
+                    </>
                 }
-            }
-            fetchLocation()
-            const id = setInterval(fetchLocation, 30000)
-
-            return () => {
-                clearInterval(id)
-            }
-        }, [location, dispatch]);
-
-        return (<>
-                <WidgetWrapper
-                    onClick={() => {
-                        setModalVisible(true)
-                    }}>
-                    {!isLoading && !error &&
-                        <>
-                            <CountryInfo weatherData={weatherData}/>
-                            <WeatherInfo weatherData={weatherData}/>
-                        </>
-                    }
-                    {isLoading && <Spinner/>}
-                    {error && <ErrorWrapper>Error: {error}</ErrorWrapper>}
-                    WETEH{weatherData?.location?.name}
-                </WidgetWrapper>
-                {modalVisible &&
-                    ReactDOM.createPortal(<MapModal defaultLocation={location} onClose={(data) => {
-                        setLocation(data)
-                        setModalVisible(false)
-                    }}/>, document.body)}
-            </>
-        );
-    }
-;
+                {isLoading && <Spinner/>}
+                {error && <ErrorWrapper>Error: {error}</ErrorWrapper>}
+            </WidgetWrapper>
+            {modalVisible &&
+                ReactDOM.createPortal(<MapModal defaultLocation={location} onClose={(data) => {
+                    setLocation(data)
+                    setModalVisible(false)
+                }}/>, document.body)}
+        </>
+    );
+}
 
 export default WeatherWidget;

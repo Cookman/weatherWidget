@@ -18,6 +18,7 @@ export const buildMap = (coords, mapElement, onClick) => {
         controls: [],
         view: new View({center: [0, 0], zoom: 1})
     });
+
     initialMap.getView().setCenter(transform(coords, 'EPSG:4326', 'EPSG:3857'));
     initialMap.getView().setZoom(12);
 

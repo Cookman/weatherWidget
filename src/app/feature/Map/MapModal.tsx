@@ -33,7 +33,6 @@ const ToolsWrapper = styled.div`
   justify-content: flex-end;
   margin: 10px 10px 0;`
 
-
 const ModalBackground = styled.div`
   background: #525b72;
   opacity: 0.7;

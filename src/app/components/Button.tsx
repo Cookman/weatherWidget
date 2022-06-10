@@ -21,6 +21,7 @@ const TitleWrapper = styled.div`
   align-items: center;
   justify-content: center;
 `
+
 const IconWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -28,10 +29,9 @@ const IconWrapper = styled.div`
   margin-right: 5px;
 `
 
-
 const Button: React.FC<Props> = ({onClick, Icon, title}) => {
     return (
-        <StyledButton onClick={() => onClick()}>
+        <StyledButton onClick={onClick}>
             <TitleWrapper>
                 {Icon && <IconWrapper><Icon/></IconWrapper>}
                 {title && <div>{title}</div>}
