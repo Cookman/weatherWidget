@@ -1,7 +1,7 @@
 import axios, {AxiosRequestConfig} from "axios";
 
 const KEY = 'b4fb0adb438146059f9205712220906'
-const BASE_URL = 'http://api.weatherapi.com/v1/current.json?'//`https://api.openweathermap.org/data/3.0/onecall`
+const BASE_URL = 'http://api.weatherapi.com/v1/current.json?'
 
 
 const axiosInstance = axios.create({baseURL: BASE_URL});

@@ -1,12 +1,12 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {RootState} from '../../state/store';
 import {createGETRequest} from "../../utils/api.axios";
-import {WeatherState} from "./weather.types";
+import {WeatherResponse, WeatherState} from "./weather.types";
 
 const SLICE_KEY = 'weather'
 
 const initialState: WeatherState = {
-    value: 0,
+    value: null,
     isLoading: false,
     error: ''
 };
@@ -14,7 +14,7 @@ const initialState: WeatherState = {
 //ACTIONS
 export const fetchCurrentWeatherAsync = createAsyncThunk(
     `${SLICE_KEY}/fetch`,
-    ({q}: { q: string }) => createGETRequest({params: {q}}),
+    ({q}: { q: string }) => createGETRequest<WeatherResponse>({params: {q}}),
     {
         serializeError: (error: any) => ({
             ...error.response,

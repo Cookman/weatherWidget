@@ -1,11 +1,9 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import weather from './weather/weather.slice';
-import ui from './ui/ui.slice'
 
 export const store = configureStore({
   reducer: {
-    weather,
-    ui
+    weather
   },
   middleware: getDefaultMiddleware => {
     const defaultMiddleware = getDefaultMiddleware({
