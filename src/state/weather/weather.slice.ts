@@ -30,7 +30,9 @@ export const weatherSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchCurrentWeatherAsync.pending, (state,action) => {
-                state.isLoading[action.meta.arg.q] = true;
+                if(!state.value[action.meta.arg.q]) {
+                    state.isLoading[action.meta.arg.q] = true;
+                }
             })
             .addCase(fetchCurrentWeatherAsync.fulfilled, (state, action) => {
                 state.isLoading[action.meta.arg.q] = false;

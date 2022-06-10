@@ -9,7 +9,6 @@ import {
 import {shallowEqual} from "react-redux";
 import styled from "styled-components";
 // @ts-ignore
-import {ReactComponent as MapIcon} from '../../../icons/map.svg';
 import MapModal from "../Map/MapModal";
 import ReactDOM from 'react-dom';
 import {getDataKey, getLocationQuery} from "./weatherWidget.helpers";
@@ -54,8 +53,7 @@ const WeatherWidget = () => {
         const error = useAppSelector(state => weatherErrorSelector(state, getDataKey(location)), shallowEqual)
 
         const [modalVisible, setModalVisible] = useState(false)
-        const [toolsVisible, setToolsVisible] = useState(false)
-
+    
         useEffect(() => {
             const fetchLocation = () => {
                 if (location) {
@@ -63,7 +61,7 @@ const WeatherWidget = () => {
                 } else {
                     getLocationQuery(q => {
                         setLocation({latitude: q.latitude, longitude: q.longitude})
-                        dispatch(fetchCurrentWeatherAsync({q: `${q.latitude},${q.longitude}`}))
+
                     })
                 }
             }
@@ -76,11 +74,10 @@ const WeatherWidget = () => {
         }, [location, dispatch]);
 
         return (<>
-                <WidgetWrapper onMouseEnter={() => setToolsVisible(true)}
-                               onMouseLeave={() => setToolsVisible(false)}
-                               onClick={() => {
-                                   setModalVisible(true)
-                               }}>
+                <WidgetWrapper
+                    onClick={() => {
+                        setModalVisible(true)
+                    }}>
                     {!isLoading && !error &&
                         <>
                             <CountryInfo weatherData={weatherData}/>
@@ -89,6 +86,7 @@ const WeatherWidget = () => {
                     }
                     {isLoading && <Spinner/>}
                     {error && <ErrorWrapper>Error: {error}</ErrorWrapper>}
+                    WETEH{weatherData?.location?.name}
                 </WidgetWrapper>
                 {modalVisible &&
                     ReactDOM.createPortal(<MapModal defaultLocation={location} onClose={(data) => {
