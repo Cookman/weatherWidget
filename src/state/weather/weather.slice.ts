@@ -39,7 +39,7 @@ export const weatherSlice = createSlice({
                 state.value[action.meta.arg.q] = action.payload.data
             })
             .addCase(fetchCurrentWeatherAsync.rejected, (state, action) => {
-                state.isLoading[action.meta.arg.q] = true;
+                state.isLoading[action.meta.arg.q] = false;
                 // @ts-ignore
                 state.error[action.meta.arg.q] = action.error.status
             });

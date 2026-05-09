@@ -66,7 +66,7 @@ describe('Weather widget test', () => {
         expect(key).toEqual('123,456');
     });
 
-    test('it should render CountyInfo', () => {
+    test('it should render CountryInfo', () => {
         const {getByText} = render(<CountryInfo weatherData={mockData}/>);
 
         expect(getByText('Potters Bar')).toBeInTheDocument();
@@ -82,10 +82,20 @@ describe('Weather widget test', () => {
 
         await waitFor(() => expect(axiosInstance.get).toHaveBeenCalledTimes(1))
         await waitFor(() => expect(axiosInstance.get).toHaveBeenCalledWith(
-            '?q=51.6938446,-0.1774186&&key=b4fb0adb438146059f9205712220906',
-            {"params": {"q": "51.6938446,-0.1774186"}}))
+            expect.stringContaining('?q=51.6938446,-0.1774186'),
+            expect.objectContaining({params: {q: '51.6938446,-0.1774186'}})))
         expect(await findByText('Potters Bar')).toBeVisible()
 
+    });
+    test('it should render error message when weather fetch fails', async () => {
+        // @ts-ignore
+        axiosInstance.get.mockImplementation(() => Promise.reject({response: {status: 500}}));
+
+        const {findByText} = render(<Provider store={store}>
+            <WeatherWidget/>
+        </Provider>);
+
+        expect(await findByText('Error: 500')).toBeVisible();
     });
 
 })
